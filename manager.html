@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 智能书签管理器</title>
+  <link rel="stylesheet" href="manager.css">
+</head>
+<body>
+  <div class="manager-container">
+    <!-- 左侧边栏 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>AI 书签</h1>
+        <button id="settingsBtn" class="icon-btn" title="设置">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6M1 12h6m6 0h6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 颜色筛选 -->
+      <div class="filter-section">
+        <h3>颜色筛选</h3>
+        <div class="color-filters">
+          <div class="color-filter selected" data-color="" title="全部">
+            <div class="color-dot all-colors">全部</div>
+          </div>
+          <div class="color-filter" data-color="red" title="红色">
+            <div class="color-dot" style="background-color: #ef4444;"></div>
+          </div>
+          <div class="color-filter" data-color="orange" title="橙色">
+            <div class="color-dot" style="background-color: #f97316;"></div>
+          </div>
+          <div class="color-filter" data-color="yellow" title="黄色">
+            <div class="color-dot" style="background-color: #eab308;"></div>
+          </div>
+          <div class="color-filter" data-color="green" title="绿色">
+            <div class="color-dot" style="background-color: #22c55e;"></div>
+          </div>
+          <div class="color-filter" data-color="cyan" title="青色">
+            <div class="color-dot" style="background-color: #06b6d4;"></div>
+          </div>
+          <div class="color-filter" data-color="blue" title="蓝色">
+            <div class="color-dot" style="background-color: #3b82f6;"></div>
+          </div>
+          <div class="color-filter" data-color="purple" title="紫色">
+            <div class="color-dot" style="background-color: #a855f7;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 标签列表 -->
+      <div class="filter-section">
+        <div class="section-header">
+          <h3>标签</h3>
+          <button id="manageTagsBtn" class="text-btn">管理</button>
+        </div>
+        <div id="tagsList" class="tags-list">
+          <!-- 标签将在这里动态渲染 -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <div class="content-header">
+        <div class="search-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="搜索书签标题、URL、域名或标签...">
+        </div>
+        <button id="addBookmarkBtn" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          添加书签
+        </button>
+      </div>
+
+      <div class="bookmarks-header">
+        <div class="bookmarks-count">
+          共 <span id="bookmarkCount">0</span> 个书签
+        </div>
+        <div class="view-controls">
+          <button class="view-btn active" data-view="list">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+          </button>
+          <button class="view-btn" data-view="grid">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="bookmarksList" class="bookmarks-list">
+        <!-- 书签将在这里动态渲染 -->
+      </div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+        <h3>还没有书签</h3>
+        <p>点击右上角的"添加书签"按钮开始收藏网页</p>
+      </div>
+    </main>
+
+    <!-- 右侧详情面板 -->
+    <aside id="detailPanel" class="detail-panel hidden">
+      <div class="detail-header">
+        <h3>书签详情</h3>
+        <button id="closeDetail" class="icon-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="detailContent" class="detail-content">
+        <!-- 详情内容将在这里动态渲染 -->
+      </div>
+    </aside>
+  </div>
+
+  <!-- 编辑对话框 -->
+  <div id="editDialog" class="dialog-overlay hidden">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h3 id="dialogTitle">编辑书签</h3>
+        <button id="closeDialog" class="icon-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="editForm" class="dialog-content">
+        <div class="form-group">
+          <label for="editTitle">标题</label>
+          <input type="text" id="editTitle" required>
+        </div>
+
+        <div class="form-group">
+          <label for="editUrl">URL</label>
+          <input type="url" id="editUrl" required>
+        </div>
+
+        <div class="form-group">
+          <label>颜色标记</label>
+          <div class="color-picker" id="editColorPicker">
+            <!-- 颜色选项将在这里动态渲染 -->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>标签</label>
+          <div class="tags-container">
+            <div id="editTags" class="selected-tags"></div>
+            <input type="text" id="editTagInput" placeholder="输入标签并按回车">
+          </div>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="submit" class="btn-primary">保存</button>
+          <button type="button" id="cancelEdit" class="btn-secondary">取消</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 标签管理对话框 -->
+  <div id="tagsDialog" class="dialog-overlay hidden">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h3>标签管理</h3>
+        <button id="closeTagsDialog" class="icon-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="dialog-content">
+        <div id="tagsManageList" class="tags-manage-list">
+          <!-- 标签管理列表将在这里动态渲染 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="storage.js"></script>
+  <script src="ai.js"></script>
+  <script src="manager.js"></script>
+</body>
+</html>

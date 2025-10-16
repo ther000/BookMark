@@ -1,0 +1,39 @@
+{
+  "name": "ai-smart-bookmarks",
+  "version": "1.0.0",
+  "description": "一款美观、高效的 Chrome 浏览器扩展程序，通过标签分类、颜色标记和 AI 自动分类功能，帮助用户高效管理网络书签",
+  "author": "AI Smart Bookmarks Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ai-smart-bookmarks"
+  },
+  "keywords": [
+    "chrome-extension",
+    "bookmarks",
+    "bookmark-manager",
+    "ai",
+    "tags",
+    "organization",
+    "productivity"
+  ],
+  "scripts": {
+    "readme": "此项目是纯前端 Chrome 扩展，无需构建步骤",
+    "install": "echo '请按照 QUICKSTART.md 的说明加载扩展到 Chrome'",
+    "test": "echo '在 Chrome 中测试：chrome://extensions/'"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "engines": {
+    "chrome": ">=88.0"
+  },
+  "config": {
+    "manifestVersion": 3,
+    "permissions": [
+      "storage",
+      "tabs",
+      "activeTab",
+      "bookmarks"
+    ]
+  }
+}

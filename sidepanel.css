@@ -1,0 +1,1150 @@
+/* 侧边栏样式 - 优化拖拽交互 */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  color: #1f2937;
+  background: #ffffff;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.sidepanel-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ===== 顶部工具栏 ===== */
+.header {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+}
+
+.search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s;
+}
+
+.search-box:focus-within {
+  background: white;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.search-box svg {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+#searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.icon-btn svg {
+  display: block;
+}
+
+/* ===== 颜色快速筛选栏 ===== */
+.color-bar {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  overflow-x: auto;
+}
+
+.color-filter {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.color-filter:hover {
+  background: #e5e7eb;
+}
+
+.color-filter.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.color-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.color-badge.all {
+  background: linear-gradient(135deg, #ef4444 0%, #f97316 14%, #eab308 28%, #22c55e 42%, #06b6d4 57%, #3b82f6 71%, #a855f7 85%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: white;
+}
+
+/* ===== 标签栏 ===== */
+.tags-bar {
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+  padding: 10px 12px;
+}
+
+.tags-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+/* 标签模式按钮 */
+.tag-mode-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.tag-mode-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.tag-mode-btn:hover {
+  background: #f3f4f6;
+  color: #3b82f6;
+}
+
+.tag-mode-btn.active {
+  background: #eff6ff;
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* 模式提示 */
+.tag-mode-hint {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exit-mode-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s;
+}
+
+.exit-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.text-btn {
+  background: transparent;
+  border: none;
+  color: #3b82f6;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.text-btn:hover {
+  background: #eff6ff;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.empty-tags {
+  color: #9ca3af;
+  font-size: 12px;
+  text-align: center;
+  padding: 12px;
+}
+
+.tag-chip {
+  background: #eff6ff;
+  color: #1e40af;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  user-select: none;
+  position: relative;
+}
+
+.tag-chip:hover {
+  background: #dbeafe;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tag-chip.active {
+  background: #3b82f6;
+  color: white;
+}
+
+/* 排序模式样式 */
+.tag-chip.sort-mode {
+  cursor: grab;
+  padding-left: 6px;
+}
+
+.tag-chip.sort-mode::before {
+  content: '≡';
+  font-size: 14px;
+  color: currentColor;
+  opacity: 0.5;
+  margin-right: 2px;
+}
+
+.tag-chip.sort-mode:hover::before {
+  opacity: 1;
+}
+
+.tag-chip.sort-mode.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+.tag-chip.sort-mode.drag-over {
+  border: 2px solid #3b82f6;
+  background: #dbeafe;
+}
+
+/* 编辑模式样式 */
+.tag-chip.edit-mode {
+  cursor: pointer;
+}
+
+.tag-chip.edit-mode::after {
+  content: '✎';
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tag-chip.edit-mode:hover::after {
+  opacity: 1;
+}
+
+/* 删除模式样式 */
+.tag-chip.delete-mode {
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.tag-chip.delete-mode:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #dc2626;
+  transform: scale(0.95);
+}
+
+.tag-chip.delete-mode::after {
+  content: '×';
+  font-size: 16px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.tag-chip.delete-mode:hover::after {
+  opacity: 1;
+}
+
+.tag-chip.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.tag-count {
+  background: rgba(30, 64, 175, 0.2);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.tag-chip.active .tag-count {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.add-tag-btn {
+  width: 100%;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  color: #6b7280;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-tag-btn:hover {
+  background: #f3f4f6;
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* ===== 书签容器 ===== */
+.bookmarks-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bookmarks-header {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #6b7280;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.bookmarks-header span {
+  font-weight: 600;
+  color: #111827;
+}
+
+.bookmarks-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* ===== 书签项 ===== */
+.bookmark-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.bookmark-item:hover {
+  background: #f9fafb;
+}
+
+.bookmark-item.drag-over {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.bookmark-color-indicator {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  border-radius: 0 2px 2px 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bookmark-color-indicator.has-color {
+  opacity: 1;
+}
+
+.bookmark-color-indicator:not(.has-color) {
+  background: #e5e7eb;
+  opacity: 0;
+}
+
+.bookmark-item:hover .bookmark-color-indicator:not(.has-color) {
+  opacity: 0.5;
+}
+
+.bookmark-color-indicator:hover {
+  width: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bookmark-favicon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.bookmark-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookmark-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookmark-url {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookmark-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag-mini {
+  background: #f3f4f6;
+  color: #4b5563;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.bookmark-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.bookmark-item:hover .bookmark-actions {
+  opacity: 1;
+}
+
+.bookmark-actions .icon-btn {
+  padding: 6px;
+}
+
+.bookmark-ai:hover {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.bookmark-delete:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* ===== 空状态 ===== */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-state svg {
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.empty-state small {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ===== 颜色选择器浮层 ===== */
+.color-picker-popup {
+  position: fixed;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 150px;
+}
+
+.color-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.color-option:hover {
+  background: #f3f4f6;
+}
+
+.color-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.color-dot.no-color {
+  background: linear-gradient(135deg, transparent 45%, #e5e7eb 45%, #e5e7eb 55%, transparent 55%);
+  border: 1px solid #d1d5db;
+}
+
+.color-option span {
+  font-size: 12px;
+  color: #374151;
+}
+
+/* ===== 对话框 ===== */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.dialog {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.dialog-header .icon-btn {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.dialog-content {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.ai-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ai-suggestions p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.ai-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-tag-btn {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ai-tag-btn:hover {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+.ai-tag-btn:disabled {
+  background: #22c55e;
+  border-color: #16a34a;
+  color: white;
+  cursor: default;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.tags-manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.tag-manage-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: grab;
+  transition: all 0.2s;
+}
+
+.tag-manage-item:hover {
+  background: #f3f4f6;
+}
+
+.tag-manage-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.tag-manage-item.drag-over {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tag-manage-drag-handle {
+  display: flex;
+  align-items: center;
+  color: #9ca3af;
+  cursor: grab;
+  padding: 2px;
+}
+
+.tag-manage-item:active .tag-manage-drag-handle {
+  cursor: grabbing;
+}
+
+.tag-manage-name {
+  flex: 1;
+  font-weight: 500;
+  color: #111827;
+}
+
+.tag-manage-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* ===== 隐藏类 ===== */
+.hidden {
+  display: none !important;
+}
+
+/* ===== 新建标签对话框 ===== */
+.dialog-create-tag .dialog-content {
+  padding: 0;
+}
+
+.create-tag-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.create-tag-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px;
+  font-size: 13px;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.create-tag-tab:hover {
+  color: #3b82f6;
+}
+
+.create-tag-tab.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+  font-weight: 600;
+}
+
+.create-tag-panel {
+  padding: 16px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.2s;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.color-picker-inline {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-pick-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.color-pick-option:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.color-pick-option.selected {
+  border-color: #3b82f6;
+}
+
+.color-pick-option.selected::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.color-pick-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.color-pick-dot.no-color {
+  background: linear-gradient(135deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%), 
+              linear-gradient(135deg, #e5e7eb 25%, white 25%, white 75%, #e5e7eb 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+  border: 1px solid #d1d5db;
+}
+
+.batch-preview {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.batch-preview strong {
+  color: #3b82f6;
+  font-size: 16px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-secondary {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-primary:disabled {
+  background: #9ca3af;
+  border-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 编辑标签对话框 */
+.dialog-edit-tag .dialog-content {
+  padding: 16px;
+}
+
+/* ===== 排序按钮 ===== */
+.sort-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.sort-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  transition: all 0.2s;
+}
+
+.sort-btn:hover {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.sort-btn.active {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+/* ===== 标签删除模式 ===== */
+.tag-mini {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tag-mini:hover {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.tag-mini.delete-mode {
+  background: #fee2e2;
+  color: #dc2626;
+  padding-right: 24px;
+}
+
+.tag-mini.delete-mode::after {
+  content: '×';
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* ===== 未分类标签样式 ===== */
+.tag-untagged {
+  background: #f3f4f6;
+  border: 1px dashed #9ca3af;
+}
+
+.tag-untagged:hover {
+  background: #e5e7eb;
+}
+
+.tag-untagged.active {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+/* ===== 书签拖拽排序 ===== */
+.bookmark-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.bookmark-item.drag-over-bookmark {
+  border-top: 3px solid #3b82f6;
+}
+
+/* ===== 标签拖拽排序 ===== */
+.tag-chip.drag-over {
+  border: 2px dashed #3b82f6;
+  background: #eff6ff;
+}
+
+/* ===== 多标签选中状态 ===== */
+.tag-chip.active {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.tag-chip.active .tag-count {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== 颜色按钮 ===== */
+.bookmark-color-btn {
+  position: relative;
+}
+
+.bookmark-color-btn svg circle {
+  stroke: currentColor;
+}
+
+.bookmark-actions .bookmark-color-btn:hover svg circle:first-child {
+  fill: rgba(59, 130, 246, 0.1);
+}
+
+/* ===== 书签头部样式优化 ===== */
+.bookmarks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ===== 滚动条 ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Toast 提示动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* ===== 动画 ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bookmark-item {
+  animation: fadeIn 0.2s ease;
+}
+

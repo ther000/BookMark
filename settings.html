@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设置 - AI 智能书签管理器</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-container">
+    <header class="settings-header">
+      <h1>设置</h1>
+      <button id="backBtn" class="btn-secondary">返回</button>
+    </header>
+
+    <main class="settings-content">
+      <section class="settings-section">
+        <h2>AI 设置</h2>
+        <p class="section-description">
+          配置 AI API 以启用智能标签建议功能。您的 API 密钥将安全存储在本地，不会上传到任何服务器。
+        </p>
+
+        <form id="aiSettingsForm">
+          <div class="form-group">
+            <label for="aiProvider">AI 服务提供商</label>
+            <select id="aiProvider">
+              <option value="openai">OpenAI (ChatGPT)</option>
+              <option value="deepseek">DeepSeek</option>
+              <option value="custom">自定义 (兼容 OpenAI API)</option>
+            </select>
+            <span class="form-hint">选择您要使用的 AI 服务</span>
+          </div>
+
+          <div class="form-group">
+            <label for="apiEndpoint">API 端点地址</label>
+            <input 
+              type="url" 
+              id="apiEndpoint" 
+              placeholder="https://api.openai.com/v1/chat/completions"
+              required
+            >
+            <span class="form-hint" id="endpointHint">例如：OpenAI API 或兼容的 API 端点</span>
+          </div>
+
+          <div class="form-group">
+            <label for="apiKey">API 密钥</label>
+            <input 
+              type="password" 
+              id="apiKey" 
+              placeholder="sk-..."
+              required
+            >
+            <span class="form-hint">您的 API 密钥将加密存储在本地</span>
+          </div>
+
+          <div class="form-group">
+            <label for="model">模型 (可选)</label>
+            <input 
+              type="text" 
+              id="model" 
+              placeholder="gpt-3.5-turbo"
+              value="gpt-3.5-turbo"
+            >
+            <span class="form-hint" id="modelHint">默认使用 gpt-3.5-turbo</span>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" id="autoAITag">
+              <span>添加新书签时自动使用 AI 建议标签</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="testConnection" class="btn-secondary">
+              测试连接
+            </button>
+            <button type="submit" class="btn-primary">
+              保存设置
+            </button>
+          </div>
+        </form>
+
+        <div id="testResult" class="test-result hidden"></div>
+      </section>
+
+      <section class="settings-section">
+        <h2>数据管理</h2>
+        <p class="section-description">
+          管理您的书签和标签数据。
+        </p>
+
+        <div class="data-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="bookmarkCount">0</div>
+            <div class="stat-label">书签数量</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="tagCount">0</div>
+            <div class="stat-label">标签数量</div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button id="exportData" class="btn-secondary">
+            导出数据
+          </button>
+          <button id="importData" class="btn-secondary">
+            导入数据
+          </button>
+          <input type="file" id="importFile" accept=".json" style="display: none;">
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>隐私政策</h2>
+        <div class="privacy-content">
+          <p>
+            AI 智能书签管理器尊重您的隐私：
+          </p>
+          <ul>
+            <li>所有书签和标签数据都存储在您的浏览器本地，通过 Chrome 账户同步</li>
+            <li>扩展程序本身不会收集或上传任何用户数据</li>
+            <li>当您使用 AI 功能时，网页内容将发送到您配置的第三方 AI 服务提供商</li>
+            <li>您的 API 密钥加密存储在本地，不会被传输到除您配置的 API 端点之外的任何服务器</li>
+            <li>您可以随时导出或删除您的所有数据</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>关于</h2>
+        <div class="about-content">
+          <p><strong>AI 智能书签管理器</strong></p>
+          <p>版本：1.0.0</p>
+          <p>一款美观、高效的书签管理工具，支持标签分类、颜色标记和 AI 自动分类。</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="message" class="message-toast hidden"></div>
+
+  <script src="storage.js"></script>
+  <script src="ai.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>
