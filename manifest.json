@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI 智能书签管理器",
-  "version": "2.1.7",
+  "version": "1.0.0",
   "description": "一款美观、高效的书签管理工具，支持标签分类、颜色标记和 AI 自动分类。使用 Chrome 侧边栏，拖拽操作更便捷。",
   "permissions": [
     "storage",
@@ -16,10 +16,10 @@
     "default_title": "打开 AI 书签管理器"
   },
   "side_panel": {
-    "default_path": "sidepanel.html"
+    "default_path": "src/pages/sidepanel/sidepanel.html"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background/background.js"
   },
   "icons": {
     "16": "icons/icon16.png",
@@ -27,5 +27,5 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "options_page": "settings.html"
+  "options_page": "src/pages/settings/settings.html"
 }

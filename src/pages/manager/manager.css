@@ -1,5 +1,27 @@
 /* Manager 样式 - 主管理界面 */
 
+:root {
+  /* 浅色模式变量 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --border-color: #e5e7eb;
+}
+
+[data-theme="dark"] {
+  /* 深色模式变量 */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #2d2d2d;
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-tertiary: #6b7280;
+  --border-color: #404040;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,8 +31,8 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 14px;
-  color: #1f2937;
-  background: #f9fafb;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
   overflow: hidden;
 }
 
@@ -754,7 +776,6 @@ body {
   border-radius: 8px;
   margin-bottom: 8px;
   transition: all 0.2s ease;
-  background: white;
 }
 
 .tag-manage-item:hover {
@@ -762,17 +783,31 @@ body {
   border-color: #d1d5db;
 }
 
-.tag-name {
-  flex: 1;
-  font-size: 14px;
-  color: #374151;
+.tag-actions {
+  display: flex;
+  gap: 4px;
 }
 
-.empty-tags {
-  text-align: center;
-  color: #9ca3af;
-  padding: 20px;
-  font-style: italic;
+.tag-remove {
+  background: transparent;
+  border: none;
+  color: #1e40af;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.tag-remove:hover {
+  background: #dc2626;
+  color: white;
 }
 
 /* 隐藏类 */

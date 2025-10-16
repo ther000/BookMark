@@ -85,30 +85,19 @@
       </section>
 
       <section class="settings-section">
-        <h2>数据管理</h2>
+        <h2>外观</h2>
         <p class="section-description">
-          管理您的书签和标签数据。
+          自定义扩展的外观和主题。
         </p>
 
-        <div class="data-stats">
-          <div class="stat-item">
-            <div class="stat-value" id="bookmarkCount">0</div>
-            <div class="stat-label">书签数量</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="tagCount">0</div>
-            <div class="stat-label">标签数量</div>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button id="exportData" class="btn-secondary">
-            导出数据
-          </button>
-          <button id="importData" class="btn-secondary">
-            导入数据
-          </button>
-          <input type="file" id="importFile" accept=".json" style="display: none;">
+        <div class="form-group">
+          <label for="themeSelect">主题模式</label>
+          <select id="themeSelect">
+            <option value="auto">自动（跟随系统）</option>
+            <option value="light">浅色模式</option>
+            <option value="dark">深色模式</option>
+          </select>
+          <span class="form-hint">选择主题模式，自动模式将根据系统设置切换</span>
         </div>
       </section>
 
@@ -141,8 +130,8 @@
 
   <div id="message" class="message-toast hidden"></div>
 
-  <script src="storage.js"></script>
-  <script src="ai.js"></script>
+  <script src="../../core/storage.js"></script>
+  <script src="../../core/ai.js"></script>
   <script src="settings.js"></script>
 </body>
 </html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 书签管理器</title>
+  <link rel="stylesheet" href="sidepanel.css">
+  <link rel="stylesheet" href="../../styles/extensions.css">
+</head>
+<body>
+  <div class="sidepanel-container">
+    <!-- 顶部工具栏 -->
+    <header class="header">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="搜索书签...">
+      </div>
+      <button id="themeToggleBtn" class="icon-btn" title="切换主题">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- 太阳图标（浅色模式） -->
+          <circle class="theme-icon-light" cx="12" cy="12" r="5"/>
+          <line class="theme-icon-light" x1="12" y1="1" x2="12" y2="3"/>
+          <line class="theme-icon-light" x1="12" y1="21" x2="12" y2="23"/>
+          <line class="theme-icon-light" x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line class="theme-icon-light" x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line class="theme-icon-light" x1="1" y1="12" x2="3" y2="12"/>
+          <line class="theme-icon-light" x1="21" y1="12" x2="23" y2="12"/>
+          <line class="theme-icon-light" x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line class="theme-icon-light" x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          <!-- 月亮图标（深色模式） -->
+          <path class="theme-icon-dark" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button id="importExportBtn" class="icon-btn" title="导入/导出">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </button>
+      <button id="deduplicateBtn" class="icon-btn" title="书签去重">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.29 7 12 12 20.71 7"/>
+          <line x1="12" y1="22" x2="12" y2="12"/>
+        </svg>
+      </button>
+      <button id="settingsBtn" class="icon-btn" title="设置">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- 颜色快速筛选栏 -->
+    <div class="color-bar">
+      <div class="color-filter active" data-color="" title="全部">
+        <div class="color-badge all">全</div>
+      </div>
+      <div class="color-filter" data-color="red" title="红色">
+        <div class="color-badge" style="background-color: #ef4444;"></div>
+      </div>
+      <div class="color-filter" data-color="orange" title="橙色">
+        <div class="color-badge" style="background-color: #f97316;"></div>
+      </div>
+      <div class="color-filter" data-color="yellow" title="黄色">
+        <div class="color-badge" style="background-color: #eab308;"></div>
+      </div>
+      <div class="color-filter" data-color="green" title="绿色">
+        <div class="color-badge" style="background-color: #22c55e;"></div>
+      </div>
+      <div class="color-filter" data-color="cyan" title="青色">
+        <div class="color-badge" style="background-color: #06b6d4;"></div>
+      </div>
+      <div class="color-filter" data-color="blue" title="蓝色">
+        <div class="color-badge" style="background-color: #3b82f6;"></div>
+      </div>
+      <div class="color-filter" data-color="purple" title="紫色">
+        <div class="color-badge" style="background-color: #a855f7;"></div>
+      </div>
+    </div>
+
+    <!-- 标签栏（可拖拽、可折叠） -->
+    <div class="tags-bar">
+      <div class="tags-bar-header">
+        <div class="tags-bar-title">
+          <button id="tagsToggleBtn" class="tags-toggle-btn" title="展开/收起标签栏">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <span>标签</span>
+        </div>
+        <div class="tags-bar-actions">
+          <button id="aiClassifyBtn" class="text-btn">AI 一键分类</button>
+          <button id="manageTagsBtn" class="text-btn">管理</button>
+        </div>
+      </div>
+      <div id="tagsList" class="tags-list">
+        <!-- 标签将动态生成 -->
+      </div>
+    </div>
+
+    <!-- 书签列表 -->
+    <div class="bookmarks-container">
+      <div class="bookmarks-header">
+        <span>
+          <span id="bookmarkCount">0</span> 个书签
+          <span id="searchResultInfo" class="search-result-info hidden"></span>
+        </span>
+        <div class="sort-buttons">
+          <button class="sort-btn" data-sort="custom" title="自定义排序（拖拽）">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="8" x2="20" y2="8"/>
+              <line x1="4" y1="16" x2="20" y2="16"/>
+              <circle cx="8" cy="8" r="2" fill="currentColor"/>
+              <circle cx="16" cy="16" r="2" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="sort-btn" data-sort="name" data-default-order="asc" title="按名称排序">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 6h16M4 12h10M4 18h6"/>
+            </svg>
+          </button>
+          <button class="sort-btn" data-sort="time" data-default-order="desc" title="按时间排序">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </button>
+          <button class="sort-btn" data-sort="domain" data-default-order="asc" title="按域名排序">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </button>
+          <button class="sort-btn" data-sort="color" data-default-order="asc" title="按颜色排序">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="bookmarksList" class="bookmarks-list">
+        <!-- 书签将动态生成 -->
+      </div>
+      <div id="emptyState" class="empty-state hidden">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+        <p>没有找到书签</p>
+        <small>使用 Ctrl+D 添加当前页面到书签</small>
+      </div>
+    </div>
+
+    <!-- 颜色选择器浮层 -->
+    <div id="colorPicker" class="color-picker-popup hidden">
+      <div class="color-option" data-color="">
+        <div class="color-dot no-color"></div>
+        <span>无颜色</span>
+      </div>
+      <div class="color-option" data-color="red">
+        <div class="color-dot" style="background-color: #ef4444;"></div>
+        <span>红色</span>
+      </div>
+      <div class="color-option" data-color="orange">
+        <div class="color-dot" style="background-color: #f97316;"></div>
+        <span>橙色</span>
+      </div>
+      <div class="color-option" data-color="yellow">
+        <div class="color-dot" style="background-color: #eab308;"></div>
+        <span>黄色</span>
+      </div>
+      <div class="color-option" data-color="green">
+        <div class="color-dot" style="background-color: #22c55e;"></div>
+        <span>绿色</span>
+      </div>
+      <div class="color-option" data-color="cyan">
+        <div class="color-dot" style="background-color: #06b6d4;"></div>
+        <span>青色</span>
+      </div>
+      <div class="color-option" data-color="blue">
+        <div class="color-dot" style="background-color: #3b82f6;"></div>
+        <span>蓝色</span>
+      </div>
+      <div class="color-option" data-color="purple">
+        <div class="color-dot" style="background-color: #a855f7;"></div>
+        <span>紫色</span>
+      </div>
+    </div>
+
+    <!-- AI 标签建议对话框 -->
+    <div id="aiDialog" class="dialog-overlay hidden">
+      <div class="dialog ai-dialog">
+        <div class="dialog-header">
+          <h3>AI 标签建议</h3>
+          <button id="closeAIDialog" class="icon-btn">×</button>
+        </div>
+        <div class="dialog-content">
+          <div id="aiBookmarkInfo" class="ai-bookmark-info hidden">
+            <img id="aiBookmarkFavicon" src="" alt="" class="ai-bookmark-favicon">
+            <div class="ai-bookmark-details">
+              <div class="ai-bookmark-title" id="aiBookmarkTitle"></div>
+              <div class="ai-bookmark-url" id="aiBookmarkUrl"></div>
+            </div>
+          </div>
+          <div id="aiLoading" class="ai-loading">
+            <div class="spinner"></div>
+            <span>AI 分析中...</span>
+          </div>
+          <div id="aiSuggestions" class="ai-suggestions hidden"></div>
+          <div id="aiActions" class="ai-actions hidden">
+            <button id="aiAcceptAll" class="primary-btn ai-accept-all">全部接受</button>
+            <button id="aiRetry" class="ghost-btn ai-retry">重新生成</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 标签管理面板 -->
+    <div id="tagManagerPanel" class="tag-manager-overlay hidden">
+      <div class="tag-manager">
+        <div class="tag-manager-header">
+          <h3>标签管理</h3>
+          <div class="tag-manager-header-actions">
+            <button id="tagManagerDeleteAllBtn" class="text-btn danger" title="清空所有标签">清空标签</button>
+            <button id="closeTagManager" class="icon-btn" title="关闭">×</button>
+          </div>
+        </div>
+        <div class="tag-manager-body">
+          <div class="tag-manager-create">
+            <input type="text" id="tagManagerInput" placeholder="输入标签（可用 , 、 空格分隔）">
+            <button id="tagManagerAddBtn" class="primary-btn">批量添加</button>
+          </div>
+          <div id="tagManagerMessage" class="tag-manager-message hidden"></div>
+          <div id="tagManagerList" class="tag-manager-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 书签标签编辑对话框 -->
+    <div id="tagEditDialog" class="dialog-overlay hidden">
+      <div class="dialog tag-edit-dialog">
+        <div class="dialog-header">
+          <h3>编辑书签</h3>
+          <button id="closeTagEditDialog" class="icon-btn">×</button>
+        </div>
+        <div class="dialog-content">
+          <div class="tag-edit-info">
+            <img id="tagEditFavicon" src="" alt="" class="tag-edit-favicon">
+            <div class="tag-edit-title-wrapper">
+              <input type="text" id="tagEditTitleInput" class="tag-edit-title-input" placeholder="书签名称">
+              <div class="tag-edit-url" id="tagEditUrl"></div>
+            </div>
+          </div>
+          <div class="tag-edit-section">
+            <label class="tag-edit-label">已有标签</label>
+            <div id="tagEditCurrent" class="tag-edit-current"></div>
+          </div>
+          <div class="tag-edit-section">
+            <label class="tag-edit-label">添加标签</label>
+            <input type="text" id="tagEditInput" class="tag-edit-input" placeholder="输入新标签（逗号或空格分隔）">
+            <div id="tagEditSuggestions" class="tag-edit-suggestions"></div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button id="tagEditCancelBtn" class="ghost-btn">取消</button>
+          <button id="tagEditSaveBtn" class="primary-btn">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 导入导出对话框 -->
+    <div id="importExportDialog" class="dialog-overlay hidden">
+      <div class="dialog import-export-dialog">
+        <div class="dialog-header">
+          <h3>导入/导出书签</h3>
+          <button id="closeImportExportDialog" class="icon-btn">×</button>
+        </div>
+        <div class="dialog-content">
+          <div class="import-export-tabs">
+            <button class="ie-tab active" data-tab="import">导入</button>
+            <button class="ie-tab" data-tab="export">导出</button>
+          </div>
+          
+          <!-- 导入面板 -->
+          <div id="importPanel" class="ie-panel">
+            <div class="ie-section">
+              <label class="ie-label">选择文件</label>
+              <div class="file-input-wrapper">
+                <input type="file" id="importFileInput" accept=".json,.html,.htm" class="file-input">
+                <label for="importFileInput" class="file-input-label">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <span id="importFileName">选择 JSON 或 HTML 文件</span>
+                </label>
+              </div>
+            </div>
+            <div class="ie-section">
+              <label class="ie-label">导入选项</label>
+              <div class="ie-options">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="importSkipDuplicates" checked>
+                  <span>跳过重复 URL</span>
+                </label>
+              </div>
+            </div>
+            <div id="importPreview" class="import-preview hidden">
+              <h4>预览</h4>
+              <div class="import-stats">
+                <div class="import-stat">
+                  <span class="import-stat-label">书签数量</span>
+                  <span id="importBookmarkCount" class="import-stat-value">0</span>
+                </div>
+                <div class="import-stat">
+                  <span class="import-stat-label">标签数量</span>
+                  <span id="importTagCount" class="import-stat-value">0</span>
+                </div>
+              </div>
+              <div id="importErrors" class="import-errors hidden"></div>
+            </div>
+            <div class="dialog-footer">
+              <button id="importCancelBtn" class="ghost-btn">取消</button>
+              <button id="importStartBtn" class="primary-btn" disabled>开始导入</button>
+            </div>
+          </div>
+          
+          <!-- 导出面板 -->
+          <div id="exportPanel" class="ie-panel hidden">
+            <div class="ie-section">
+              <label class="ie-label">导出格式</label>
+              <div class="ie-radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="exportFormat" value="json" checked>
+                  <span>JSON（推荐，包含完整元数据）</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="exportFormat" value="html">
+                  <span>HTML（Chrome/Firefox 兼容）</span>
+                </label>
+              </div>
+            </div>
+            <div class="ie-section">
+              <label class="ie-label">导出范围</label>
+              <div class="ie-radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="exportScope" value="all" checked>
+                  <span>全部书签 (<span id="exportAllCount">0</span> 个)</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="exportScope" value="filtered">
+                  <span>当前筛选结果 (<span id="exportFilteredCount">0</span> 个)</span>
+                </label>
+              </div>
+            </div>
+            <div class="export-info">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <span>导出的文件将保存到浏览器默认下载位置</span>
+            </div>
+            <div class="dialog-footer">
+              <button id="exportCancelBtn" class="ghost-btn">取消</button>
+              <button id="exportStartBtn" class="primary-btn">导出书签</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 去重对话框 -->
+    <div id="deduplicateDialog" class="dialog-overlay hidden">
+      <div class="dialog deduplicate-dialog">
+        <div class="dialog-header">
+          <h3>书签去重</h3>
+          <button id="closeDeduplicateDialog" class="icon-btn">×</button>
+        </div>
+        <div class="dialog-content">
+          <div class="dedupe-status" id="dedupeStatus">
+            <div class="dedupe-status-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                <polyline points="3.29 7 12 12 20.71 7"/>
+                <line x1="12" y1="22" x2="12" y2="12"/>
+              </svg>
+            </div>
+            <p class="dedupe-status-text">点击"扫描"按钮检测重复书签</p>
+          </div>
+          
+          <div id="dedupeResults" class="dedupe-results hidden">
+            <div class="dedupe-summary">
+              <div class="dedupe-summary-item">
+                <span class="dedupe-summary-label">重复组数</span>
+                <span id="dedupeGroupCount" class="dedupe-summary-value">0</span>
+              </div>
+              <div class="dedupe-summary-item">
+                <span class="dedupe-summary-label">重复书签数</span>
+                <span id="dedupeTotalCount" class="dedupe-summary-value">0</span>
+              </div>
+            </div>
+            
+            <div id="dedupeList" class="dedupe-list"></div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button id="dedupeScanBtn" class="primary-btn">扫描重复</button>
+          <button id="dedupeAutoBtn" class="primary-btn" disabled>自动去重</button>
+          <button id="dedupeCloseBtn" class="ghost-btn">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast 通知容器 -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 加载指示器 -->
+    <div id="loadingIndicator" class="loading-indicator hidden">
+      <div class="loading-spinner"></div>
+      <span id="loadingText">加载中...</span>
+    </div>
+  </div>
+
+  <script src="../../core/utils.js"></script>
+  <script src="../../core/performance.js"></script>
+  <script src="../../core/import-export.js"></script>
+  <script src="extensions-integration.js"></script>
+  <script src="../../core/storage.js"></script>
+  <script src="../../core/ai.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

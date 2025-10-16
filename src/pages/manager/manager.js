@@ -10,6 +10,9 @@ let editingBookmark = null;
 
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', async () => {
+  // 初始化主题
+  await Storage.initTheme();
+  
   await loadBookmarks();
   await loadTags();
   initColorFilters();
@@ -406,12 +409,50 @@ async function showTagsDialog() {
   const list = document.getElementById('tagsManageList');
   const tags = await Storage.getTags();
   
-  // 基础实现 - 仅显示标签列表，不包含排序、编辑和删除功能
   list.innerHTML = tags.map(tag => `
     <div class="tag-manage-item">
       <span class="tag-name">${escapeHtml(tag)}</span>
+      <div class="tag-actions">
+        <button class="icon-btn tag-rename" data-tag="${tag}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button class="icon-btn tag-delete" data-tag="${tag}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
     </div>
   `).join('');
+  
+  // 绑定重命名
+  list.querySelectorAll('.tag-rename').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const oldName = btn.dataset.tag;
+      const newName = prompt('输入新的标签名:', oldName);
+      if (newName && newName !== oldName) {
+        await Storage.renameTag(oldName, newName);
+        await loadTags();
+        showTagsDialog();
+      }
+    });
+  });
+  
+  // 绑定删除
+  list.querySelectorAll('.tag-delete').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (confirm(`确定要删除标签"${btn.dataset.tag}"吗？`)) {
+        await Storage.deleteTag(btn.dataset.tag);
+        await loadTags();
+        await loadBookmarks();
+        showTagsDialog();
+      }
+    });
+  });
   
   dialog.classList.remove('hidden');
 }

@@ -23,9 +23,19 @@ const AI_PROVIDERS = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // 初始化主题
+  await Storage.initTheme();
+  
   await loadSettings();
-  await loadStats();
   initForms();
+  
+  // 主题选择
+  document.getElementById('themeSelect').addEventListener('change', async (e) => {
+    const theme = e.target.value;
+    await Storage.saveTheme(theme);
+    Storage.applyTheme(theme);
+    showMessage('主题设置已保存');
+  });
   
   // AI 提供商选择
   document.getElementById('aiProvider').addEventListener('change', (e) => {
@@ -89,6 +99,10 @@ async function loadSettings() {
   
   const provider = settings.aiProvider || 'openai';
   const providers = settings.providers || {};
+  const theme = settings.theme || 'auto';
+  
+  // 加载主题设置
+  document.getElementById('themeSelect').value = theme;
   
   document.getElementById('aiProvider').value = provider;
   
@@ -100,15 +114,6 @@ async function loadSettings() {
   document.getElementById('autoAITag').checked = settings.autoAITag || false;
   
   updateAIProviderFields(provider);
-}
-
-// 加载统计数据
-async function loadStats() {
-  const bookmarks = await Storage.getAllBookmarks();
-  const tags = await Storage.getTags();
-  
-  document.getElementById('bookmarkCount').textContent = bookmarks.length;
-  document.getElementById('tagCount').textContent = tags.length;
 }
 
 // 初始化表单
@@ -124,23 +129,6 @@ function initForms() {
   // 测试连接
   document.getElementById('testConnection').addEventListener('click', async () => {
     await testAPIConnection();
-  });
-  
-  // 导出数据
-  document.getElementById('exportData').addEventListener('click', async () => {
-    await exportData();
-  });
-  
-  // 导入数据
-  document.getElementById('importData').addEventListener('click', () => {
-    document.getElementById('importFile').click();
-  });
-  
-  document.getElementById('importFile').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      await importData(file);
-    }
   });
 }
 
@@ -218,61 +206,6 @@ async function testAPIConnection() {
   } finally {
     testBtn.disabled = false;
     testBtn.textContent = '测试连接';
-  }
-}
-
-// 导出数据
-async function exportData() {
-  try {
-    const bookmarks = await Storage.getBookmarks();
-    const tags = await Storage.getTags();
-    
-    const data = {
-      version: '1.0.0',
-      exportDate: new Date().toISOString(),
-      bookmarks,
-      tags
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ai-bookmarks-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    
-    showMessage('数据导出成功！', 'success');
-  } catch (error) {
-    showMessage(`导出失败: ${error.message}`, 'error');
-  }
-}
-
-// 导入数据
-async function importData(file) {
-  try {
-    const text = await file.text();
-    const data = JSON.parse(text);
-    
-    if (!data.bookmarks || !Array.isArray(data.bookmarks)) {
-      throw new Error('无效的数据格式');
-    }
-    
-    if (!confirm(`确定要导入 ${data.bookmarks.length} 个书签吗？这将覆盖现有数据。`)) {
-      return;
-    }
-    
-    await chrome.storage.sync.set({
-      bookmarks: data.bookmarks,
-      tags: data.tags || []
-    });
-    
-    await loadStats();
-    showMessage('数据导入成功！', 'success');
-  } catch (error) {
-    showMessage(`导入失败: ${error.message}`, 'error');
-  } finally {
-    document.getElementById('importFile').value = '';
   }
 }
 

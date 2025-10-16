@@ -3,14 +3,14 @@
 
 const AI = {
   // 调用 AI API 获取标签建议
-  async getSuggestedTags(bookmark, existingTags) {
+  async getSuggestedTags(bookmark, existingTags = [], context = {}) {
     const config = await Storage.getCurrentAIConfig();
     
     if (!config.apiEndpoint || !config.apiKey) {
       throw new Error('请先在设置中配置 AI API 信息');
     }
 
-    const prompt = this.buildPrompt(bookmark, existingTags);
+    const prompt = this.buildPrompt(bookmark, existingTags, context);
     
     try {
       const response = await fetch(config.apiEndpoint, {
@@ -31,8 +31,8 @@ const AI = {
               content: prompt
             }
           ],
-          temperature: 0.7,
-          max_tokens: 200
+          temperature: 0.3,
+          max_tokens: 256
         })
       });
 
@@ -43,8 +43,8 @@ const AI = {
 
       const data = await response.json();
       const content = data.choices?.[0]?.message?.content || '';
-      
-      return this.parseAIResponse(content);
+      const parsed = this.parseAIResponse(content);
+      return this.normalizeTags(parsed);
     } catch (error) {
       console.error('AI API 调用失败:', error);
       throw error;
@@ -52,26 +52,64 @@ const AI = {
   },
 
   // 构建发送给 AI 的 Prompt
-  buildPrompt(bookmark, existingTags) {
-    const tagList = existingTags.length > 0 
-      ? existingTags.join('、') 
+  buildPrompt(bookmark, existingTags, context = {}) {
+    const {
+      knownTags = [],
+      relatedTags = [],
+      examples = [],
+      urlInfo = {},
+      keywords = []
+    } = context || {};
+
+    const limitedKnownTags = Array.isArray(knownTags) ? knownTags.slice(0, 30) : [];
+    const limitedExisting = Array.isArray(existingTags) ? existingTags.slice(0, 6) : [];
+    const limitedRelated = Array.isArray(relatedTags) ? relatedTags.slice(0, 10) : [];
+    const limitedExamples = Array.isArray(examples) ? examples.slice(0, 3) : [];
+    const limitedKeywords = Array.isArray(keywords) ? keywords.slice(0, 8) : [];
+
+    const knownTagsText = limitedKnownTags.length > 0 ? limitedKnownTags.join('、') : '暂无';
+    const relatedTagsText = limitedRelated.length > 0 ? limitedRelated.join('、') : '暂无';
+    const examplesText = limitedExamples.length > 0
+      ? limitedExamples.map((item, index) => `${index + 1}. ${item}`).join('\n')
       : '暂无';
+    const keywordsText = limitedKeywords.length > 0 ? limitedKeywords.join('、') : '暂无';
+    const existingText = limitedExisting.length > 0 ? limitedExisting.join('、') : '无';
 
-    return `请分析以下网页内容，并推荐合适的标签：
+    const lines = [
+      '请作为资深信息分类专家，为以下书签推荐最合适的标签。',
+      '',
+      `网页标题：${bookmark?.title || '未提供'}`
+    ];
 
-网页标题：${bookmark.title}
-网页URL：${bookmark.url}
-${bookmark.description ? `网页描述：${bookmark.description}` : ''}
+    if (bookmark?.url) {
+      lines.push(`网页URL：${bookmark.url}`);
+    }
+    if (urlInfo?.domain) {
+      lines.push(`网页域名：${urlInfo.domain}`);
+    }
+    if (urlInfo?.path) {
+      lines.push(`网页路径：${urlInfo.path}`);
+    }
+    if (bookmark?.description) {
+      lines.push(`网页描述：${bookmark.description}`);
+    }
 
-现有标签列表：【${tagList}】
+    lines.push(`标题关键词：${keywordsText}`);
+    lines.push(`书签已有标签：${existingText}`);
+    lines.push(`已知标签体系（优先使用）：${knownTagsText}`);
+    lines.push(`同域名热门标签：${relatedTagsText}`);
+    lines.push('相似书签示例：');
+    lines.push(examplesText);
+    lines.push('');
+    lines.push('要求：');
+    lines.push('1. 返回 1-3 个标签，优先从“已知标签体系”中选择；若无合适可创建与主题高度相关的新标签。');
+    lines.push('2. 标签需语义明确，长度 2-8 字，避免重复、含糊或过于宽泛。');
+    lines.push('3. 仅输出 JSON 数组，例如 ["技术文章","前端开发"]。');
+    lines.push('4. JSON 中只包含标签字符串，不要额外解释或添加字段。');
+    lines.push('');
+    lines.push('请根据以上信息返回标签数组。');
 
-请从现有标签列表中选择最合适的 1-3 个标签。如果现有标签都不合适，请根据内容创建 1-2 个简洁、相关的新标签。
-
-要求：
-1. 标签应该简洁明了，2-6 个字
-2. 标签应该准确反映网页的主题或类型
-3. 请以 JSON 数组格式返回，例如：["技术文章", "JavaScript"]
-4. 只返回 JSON 数组，不要有其他说明文字`;
+    return lines.join('\n');
   },
 
   // 解析 AI 返回的结果
@@ -92,6 +130,33 @@ ${bookmark.description ? `网页描述：${bookmark.description}` : ''}
       console.error('解析 AI 响应失败:', error);
       return [];
     }
+  },
+
+  normalizeTags(tags) {
+    if (!Array.isArray(tags)) {
+      return [];
+    }
+
+    const seen = new Set();
+    const normalized = [];
+
+    tags.forEach(tag => {
+      if (typeof tag !== 'string') {
+        return;
+      }
+      const trimmed = tag.trim();
+      if (!trimmed) {
+        return;
+      }
+      const lower = trimmed.toLowerCase();
+      if (seen.has(lower)) {
+        return;
+      }
+      seen.add(lower);
+      normalized.push(trimmed);
+    });
+
+    return normalized.slice(0, 5);
   },
 
   // 测试 AI API 连接
