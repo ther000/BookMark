@@ -50,7 +50,7 @@
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/yourusername/BookMark.git
+git clone https://github.com/ther000/BookMark.git
 cd BookMark
 ```
 
