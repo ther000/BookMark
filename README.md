@@ -234,8 +234,8 @@ BookMark/
 
 ## 📧 联系方式
 
-- 项目主页: https://github.com/yourusername/BookMark
-- Issue 反馈: https://github.com/yourusername/BookMark/issues
+- 项目主页: https://github.com/ther000/BookMark
+- Issue 反馈: https://github.com/ther000/BookMark/issues
 
 ---
 
